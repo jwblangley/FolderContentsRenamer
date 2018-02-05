@@ -12,6 +12,7 @@ public class FolderContentsRenamer {
     if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
       File workingDirectory = fc.getSelectedFile();
       Arrays.stream(workingDirectory.listFiles())
+          .filter(File::isFile)
           .forEach(file
               -> prependToFileName(file, workingDirectory.getName(), "_"));
     }
@@ -39,18 +40,17 @@ public class FolderContentsRenamer {
   private static void prependToFileName(File f, String prefix) {
     String newPath = f.getParent() + "/" + prefix + f.getName();
     File newFile = new File(newPath);
-    if (f.isFile()) {
-      if (!newFile.exists()) {
-        if (!f.getName().startsWith(prefix)) {
-          f.renameTo(newFile);
-        } else {
-          System.out.println(f.getName() + " already prefixed"
-              + " - will not rename to " + newFile.getName());
-        }
+    if (!newFile.exists()) {
+      if (!f.getName().startsWith(prefix)) {
+        f.renameTo(newFile);
       } else {
-        System.out.println(newFile.getName() + " already exists in directory"
-            + " - will not overwrite. " + f.getName() + " not renamed");
+        System.out.println(f.getName() + " already prefixed"
+            + " - will not rename to " + newFile.getName());
       }
+    } else {
+      System.out.println(newFile.getName() + " already exists in directory"
+          + " - will not overwrite. " + f.getName() + " not renamed");
     }
+
   }
 }
