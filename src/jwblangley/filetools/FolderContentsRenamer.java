@@ -2,20 +2,30 @@ package jwblangley.filetools;
 
 import java.io.File;
 import java.util.Arrays;
-import javax.swing.JFileChooser;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
-public class FolderContentsRenamer {
+public class FolderContentsRenamer extends Application {
 
   public static void main(String[] args) {
-    JFileChooser fc = new JFileChooser();
-    fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-      File workingDirectory = fc.getSelectedFile();
+    launch(args);
+  }
+
+  public void start(Stage primaryStage) {
+    DirectoryChooser dc = new DirectoryChooser();
+    dc.setTitle("Directory to name files");
+    File workingDirectory = dc.showDialog(primaryStage);
+
+    if (workingDirectory != null && workingDirectory.isDirectory()) {
       Arrays.stream(workingDirectory.listFiles())
+          .parallel()
           .filter(File::isFile)
           .forEach(file
               -> prependToFileName(file, workingDirectory.getName(), "_"));
     }
+    Platform.exit();
   }
 
   /**
